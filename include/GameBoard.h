@@ -34,6 +34,9 @@ public:
     virtual ~GameBoard();
 
 protected:
+// Protected members are inherited and these members are static because I want
+// the inherited opponent class to have access to the original values of the
+// parent class
 
     static const int m_ROWS = 3;
     static const int m_COLUMNS = 3;
@@ -55,7 +58,7 @@ private:
     bool isDiagComplete(vector2 pos);
 
 public:
-    // TODO figure out how to return a 2d array
+    // TODO figure out how to return a pointer to a 2d array
     static char m_board[m_ROWS][m_COLUMNS];
 };
 

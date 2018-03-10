@@ -5,7 +5,7 @@
 using namespace std;
 
 void intro();
-void drawBoard(GameBoard &gameBoard);
+void drawBoard(const GameBoard &gameBoard);
 void displayBadInput(); // TODO parameterize, make dynamic
 void resetInputStream();
 void getInput(string prompt, int &choice);
@@ -23,6 +23,7 @@ int main()
 
     do {
         gameBoard.nextTurn();
+        // TODO If play enters a bad input, the turn is still swapped.
         if (gameBoard.isPlayersTurn())
         {
             drawBoard(gameBoard);
@@ -59,6 +60,7 @@ int main()
     return 0;
 }
 
+// TODO make the intro interesting and engaging.
 void intro()
 {
     cout << "\t\tTIC TAC TOE\n" << endl;
@@ -68,7 +70,7 @@ void intro()
 }
 
 
-void drawBoard(GameBoard &gameBoard)
+void drawBoard(const GameBoard &gameBoard)
 {
     cout << endl;
     for (int i = 0; i < 3; i++)

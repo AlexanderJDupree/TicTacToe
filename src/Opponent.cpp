@@ -9,21 +9,20 @@ vector2 Opponent::generateMove()
 {
     vector2 computerMove;
     // Check if Opponent can win
-    // TODO Turn this for statements into separate functions.
     for (unsigned int i = 0; i < m_computerTokens.size(); i++)
     {
         vector2 pos = m_computerTokens[i];
-        if (checkRow(computerMove, pos, m_COMPUTER, m_PLAYER))
+        if (checkRow(computerMove, pos))
         {
             return computerMove;
         }
-        else if (checkCol(computerMove, pos, m_COMPUTER, m_PLAYER))
+        else if (checkCol(computerMove, pos))
         {
             return computerMove;
         }
-        else if (checkDiag(computerMove, pos, m_COMPUTER, m_PLAYER))
+        else if (checkDiag(computerMove, pos))
         {
-            continue;
+            return computerMove;
         }
     }
 
@@ -31,22 +30,22 @@ vector2 Opponent::generateMove()
     for (unsigned int i = 0; i < m_playerTokens.size(); i++)
     {
         vector2 pos = m_playerTokens[i];
-        if (checkRow(computerMove, pos, m_COMPUTER, m_PLAYER))
+        if (checkRow(computerMove, pos))
         {
             return computerMove;
         }
-        else if (checkCol(computerMove, pos, m_COMPUTER, m_PLAYER))
+        else if (checkCol(computerMove, pos))
         {
             return computerMove;
         }
-        else if (checkDiag(computerMove, pos, m_COMPUTER, m_PLAYER))
+        else if (checkDiag(computerMove, pos))
         {
             continue;
         }
     }
 
     // Check if a corner is available
-    //  TODO Fix this garbage
+    //  TODO Fix this garbage move into a grabCorner function and optimize.
     if (m_board[0][0] == '1')
     {
         computerMove = (vector2){0, 0};
@@ -76,7 +75,7 @@ Opponent::~Opponent()
 }
 
 //Private
-bool Opponent::checkRow(vector2& compMove, vector2 pos, char token, char antiToken)
+bool Opponent::checkRow(vector2& compMove, vector2 pos)
 {
     int computer = 0;
     int player = 0;
@@ -84,8 +83,8 @@ bool Opponent::checkRow(vector2& compMove, vector2 pos, char token, char antiTok
 
     for (int i = 0; i < m_COLUMNS; i++)
     {
-        if (m_board[pos.x][i] == token) { computer += 1; }
-        else if (m_board[pos.x][i] == antiToken) { player += 1; }
+        if (m_board[pos.x][i] == m_COMPUTER) { computer += 1; }
+        else if (m_board[pos.x][i] == m_PLAYER) { player += 1; }
         else
         {
             compMove = (vector2) {pos.x, i};
@@ -101,7 +100,7 @@ bool Opponent::checkRow(vector2& compMove, vector2 pos, char token, char antiTok
 
 }
 
-bool Opponent::checkCol(vector2& compMove, vector2 pos, char token, char antiToken)
+bool Opponent::checkCol(vector2& compMove, vector2 pos)
 {
     int computer = 0;
     int player = 0;
@@ -109,8 +108,8 @@ bool Opponent::checkCol(vector2& compMove, vector2 pos, char token, char antiTok
 
     for (int i = 0; i < m_ROWS; i++)
     {
-        if (m_board[i][pos.y] == token) { computer += 1; }
-        else if (m_board[i][pos.y] == antiToken) { player += 1; }
+        if (m_board[i][pos.y] == m_COMPUTER) { computer += 1; }
+        else if (m_board[i][pos.y] == m_PLAYER) { player += 1; }
         else
         {
             compMove = (vector2){i, pos.y};
@@ -126,17 +125,42 @@ bool Opponent::checkCol(vector2& compMove, vector2 pos, char token, char antiTok
 
 }
 
-// TODO Make this dynamic
-bool Opponent::checkDiag(vector2& compMove, vector2 pos, char token, char antiToken)
+// TODO Make this dynamic meaning this would be able to scale if the board was
+// a 4 x 4 or 5 x 5 board instead of 3 x 3
+bool Opponent::checkDiag(vector2& compMove, vector2 pos)
 {
     int computer = 0;
-    //int player = 0;
-    //bool isOpen = false;
-    char diagonolChars[3] = {m_board[0][0], m_board[2][2], m_board[1][1]};
+    int player = 0;
+    bool isOpen = false;
+
     for (int i = 0; i < 3; i++)
     {
-        if (token == diagonolChars[i]) { computer += 1; }
+        if (m_COMPUTER == m_board[i][i]) { computer += 1; }
+        else if (m_PLAYER == m_board[i][i]) { player += 1; }
+        else
+        {
+            compMove = (vector2){i, i};
+            isOpen = true;
+        }
     }
-    if (computer == 2) { return true; }
+
+    if ((computer == 2 || player == 2) && isOpen) { return true; }
+    else
+    {
+        computer = 0;
+        player = 0;
+        isOpen = false;
+    }
+    for (int i = 0, j = 2; i < 3 && j >= 0; i++, j--)
+    {
+        if (m_COMPUTER == m_board[i][j]) { computer += 1; }
+        else if (m_PLAYER == m_board[i][j]) { player += 1; }
+        else
+        {
+            compMove = (vector2){i, j};
+            isOpen = true;
+        }
+    }
+    if ((computer == 2 || player == 2) && isOpen) { return true; }
     else { return false; }
 }
